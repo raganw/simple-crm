@@ -1,3 +1,4 @@
+import { updateUser } from "./controllers/update-user";
 import { AppDataSource } from "./data-source";
 import { User } from "./entity/User";
 import * as express from "express";
@@ -20,14 +21,13 @@ const run = async () => {
         res.json(user);
     });
     app.put("/users/:id", async (req, res) => {
-        const user = await AppDataSource.manager
-            .getRepository(User)
-            .findOne({ where: { id: req.params.id } });
-        user.firstName = req.body.firstName;
-        user.lastName = req.body.lastName;
-        user.id = req.body.age;
-        user.phoneNumber = req.body.phoneNumber;
-        await AppDataSource.manager.getRepository(User).save(user);
+        const user = await updateUser(AppDataSource, {
+            id: req.params.id,
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            age: req.body.age,
+            phoneNumber: req.body.phoneNumber,
+        });
         res.json(user);
     });
     app.listen(3000, () => {
