@@ -23,6 +23,7 @@ export const Users: React.FC = () => {
                         <th>Last Name</th>
                         <th>Age</th>
                         <th>Phone Number</th>
+                        <th>User Notes</th>
                     </tr>
                 </thead>
                 <tbody>

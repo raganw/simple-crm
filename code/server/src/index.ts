@@ -2,13 +2,18 @@ import { updateUser } from "./controllers/update-user";
 import { AppDataSource } from "./data-source";
 import { User } from "./entity/User";
 import * as express from "express";
+import { UserNote } from "./entity/UserNote";
+import { addUserNote } from "./controllers/add-user-note";
 
 const run = async () => {
     await AppDataSource.initialize();
     const app = express();
     app.use(express.json());
     app.get("/users", async (req, res) => {
-        const users = await AppDataSource.manager.getRepository(User).find();
+        const users = await AppDataSource.manager.getRepository(User).find({
+            relations: { userNotes: true },
+            order: { userNotes: { createdAt: "DESC" } },
+        });
         res.json(users);
     });
     app.post("/users", async (req, res) => {
@@ -29,6 +34,14 @@ const run = async () => {
             phoneNumber: req.body.phoneNumber,
         });
         res.json(user);
+    });
+    app.post("/users/:id/note", async (req, res) => {
+        const userNote = await addUserNote(
+            AppDataSource,
+            req.params.id,
+            req.body.content,
+        );
+        res.json(userNote);
     });
     app.listen(3000, () => {
         console.log("Server is running on http://localhost:3000");

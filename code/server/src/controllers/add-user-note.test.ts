@@ -1,10 +1,10 @@
 import { DataSource, Repository } from "typeorm";
 import { beforeEach, describe, test, expect } from "vitest";
 import { User } from "../entity/User";
-import { updateUser } from "./update-user";
 import { UserNote } from "../entity/UserNote";
+import { addUserNote } from "./add-user-note";
 
-describe("updateUser", () => {
+describe("addUserNote", () => {
     let testUserRepo: Repository<User>;
     let testDataSource: DataSource;
     const testUser = new User();
@@ -29,31 +29,20 @@ describe("updateUser", () => {
         testUserRepo.insert(testUser);
     });
 
-    test("it should update the user information, not creating another record", async () => {
-        // Assemble
-        const testUpdateData = {
-            ...testUser,
-            age: 31,
-            firstName: "Johnny",
-        };
-        const beforeUpdate = await testUserRepo.find();
-        expect(beforeUpdate).toHaveLength(1);
-        expect(beforeUpdate[0]).toStrictEqual(testUser);
+    test("add a note to a user", async () => {
+        const TEST_NOTE_1 = "Test note 1";
 
         // Act
-        await updateUser(testDataSource, testUpdateData);
+        await addUserNote(testDataSource, testUser.id, TEST_NOTE_1);
 
         // Assert
-        const afterUpdate = await testUserRepo.find();
-        expect(afterUpdate).toHaveLength(1);
-        expect(afterUpdate[0]).toMatchInlineSnapshot(`
-          User {
-            "age": 31,
-            "firstName": "Johnny",
-            "id": 123,
-            "lastName": "Doe",
-            "phoneNumber": "4255550123",
-          }
-        `);
+        const users = await testUserRepo.find({
+            relations: { userNotes: true },
+            order: { userNotes: { createdAt: "DESC" } },
+        });
+        expect(users).toHaveLength(1);
+        expect(users[0].userNotes).toHaveLength(1);
+        expect(users[0].userNotes[0].content).toEqual(TEST_NOTE_1);
+        expect(users[0].userNotes[0].createdAt).toBeInstanceOf(Date);
     });
 });
