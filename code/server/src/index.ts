@@ -25,6 +25,14 @@ const run = async () => {
         await AppDataSource.manager.getRepository(User).save(user);
         res.json(user);
     });
+    app.get("/users/:id", async (req, res) => {
+        const user = await AppDataSource.manager.getRepository(User).findOneOrFail({
+            where: { id: req.params.id },
+            relations: { userNotes: true },
+            order: { userNotes: { createdAt: "DESC" } },
+        });
+        res.json(user);
+    });
     app.put("/users/:id", async (req, res) => {
         const user = await updateUser(AppDataSource, {
             id: req.params.id,

@@ -2,6 +2,8 @@ import { useState } from "react";
 import { User } from "./types";
 import axios from "axios";
 import { AddNote } from "./add-note";
+import { Link } from "react-router";
+import { UserNotes } from "./user-notes";
 
 type EditingMode = "none" | "user" | "userNote";
 
@@ -104,25 +106,20 @@ export const UserRow: React.FC<{ user: User }> = ({ user }) => {
                 <button onClick={() => setEditingMode("user")}>Edit</button>
                 <button onClick={() => setEditingMode("userNote")}>Add Note</button>
             </td>
-            <td>{firstName}</td>
-            <td>{lastName}</td>
-            <td>{age}</td>
-            <td>{phoneNumber}</td>
             <td>
-                <ul className="space-y-3">
-                    {user.userNotes.map(note => (
-                        <li
-                            key={note.id}
-                            className="rounded-lg bg-white shadow p-4 border border-gray-200">
-                            <div className="flex flex-col">
-                                <p className="text-gray-800">{note.content}</p>
-                                <span className="text-xs text-gray-400 mt-2 self-end">
-                                    {new Date(note.createdAt).toLocaleString()}
-                                </span>
-                            </div>
-                        </li>
-                    ))}
-                </ul>
+                <Link to={`/user/${user.id}`}>{firstName}</Link>
+            </td>
+            <td>
+                <Link to={`/user/${user.id}`}>{lastName}</Link>
+            </td>
+            <td>
+                <Link to={`/user/${user.id}`}>{age}</Link>
+            </td>
+            <td>
+                <Link to={`/user/${user.id}`}>{phoneNumber}</Link>
+            </td>
+            <td>
+                <UserNotes userNotes={user.userNotes} />
             </td>
         </tr>
     );

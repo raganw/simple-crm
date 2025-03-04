@@ -1,13 +1,13 @@
-import { AddUser } from "./add-user";
-import { Users } from "./users";
+import { Route, Routes } from "react-router";
+import { HomePage } from "./Home";
+import { UserPage } from "./UserPage";
 
 export const App: React.FC = () => {
     return (
-        <div className="p-4 space-y-8">
-            <h1 className="text-xl">SimpleCrm</h1>
-            <Users />
-            <AddUser />
-        </div>
+        <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/user/:userId" element={<UserPage />} />
+        </Routes>
     );
 };
 
